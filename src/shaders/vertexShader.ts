@@ -1,4 +1,4 @@
-import { CanvasContext, ShaderType } from '../utils';
+import { CanvasContext, ShaderType } from '../utils/utils';
 import { Shader } from './shader';
 import { ShaderBase } from './shaderBase';
 

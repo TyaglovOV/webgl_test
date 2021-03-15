@@ -1,28 +1,33 @@
-import React, { Dispatch, SetStateAction } from 'react'
-import pages, { Pages } from '../pages'
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
+import pages, { PagePayload, Pages } from '../pages'
 import './Header.css'
 
 type Props = {
-  setCurrentPage: Dispatch<SetStateAction<Pages>>
+  setCurrentPage: Dispatch<SetStateAction<PagePayload>>
 }
 
 function Header(props: Props) {
-  const  { setCurrentPage } = props
+  const { setCurrentPage } = props
 
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrentPage(event.target.value as Pages)
+    // @ts-ignore
+    setCurrentPage(pages.find((page) => {
+      return page.id === event.target.value
+    }))
   }
 
+
+
   return (
-    <div className="Header">
-      <select name="pages" id="pages" onChange={onChange}>
+    visible ? <div className="Header">
+      <select className="pageSelect" name="pages" id="pages" onChange={onChange}>
         {
           pages.map((page) => {
             return <option key={page.id} value={page.id}>{page.name}</option>
           })
         }
       </select>
-    </div>
+    </div> : null
   )
 }
 

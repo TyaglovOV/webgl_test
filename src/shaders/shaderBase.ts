@@ -1,4 +1,4 @@
-import { GLSLShader, ShaderType } from '../utils';
+import { GLSLShader, ShaderType } from '../utils/utils';
 
 export class ShaderBase {
   type: ShaderType

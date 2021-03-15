@@ -1,13 +1,14 @@
-import { CanvasContext } from '../utils';
+import { CanvasContext } from '../utils/utils';
 import { Shader } from '../shaders/shader';
 
 // привязка шейдериков к программе
 export class Program {
-  program: WebGLProgram = undefined
-  canvasContext: CanvasContext = undefined
+  program: WebGLProgram
+  canvasContext: CanvasContext
 
   constructor(canvasContext: CanvasContext, vertexShader: Shader, fragmentShader: Shader) {
-    const program = canvasContext.createProgram()
+    const program = canvasContext.createProgram()!
+
     canvasContext.attachShader(program, vertexShader.shader)
     canvasContext.attachShader(program, fragmentShader.shader)
     canvasContext.linkProgram(program)
