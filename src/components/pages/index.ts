@@ -1,9 +1,11 @@
 import { createVectorFieldMultiple } from './vectorFieldMultiple'
 import { createVectorField } from './vectorField'
+import { textureLesson1 } from './textureLesson1'
 
 export enum Pages {
   VectorField = 'vectorField',
-  VectorFieldMultiple = 'VectorFieldMultiple'
+  VectorFieldMultiple = 'VectorFieldMultiple',
+  TextureLesson1 = 'textureLesson1'
 }
 
 export type PagePayload = {
@@ -26,6 +28,11 @@ const pages = [
     id: Pages.VectorFieldMultiple,
     name: Pages.VectorFieldMultiple,
     createScene: createVectorFieldMultiple
+  },
+  {
+    id: Pages.TextureLesson1,
+    name: Pages.TextureLesson1,
+    createScene: textureLesson1
   }
 ] as PagePayload[]
 

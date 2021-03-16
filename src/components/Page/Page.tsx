@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ReactElement, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 
 import pages, { PagePayload } from '../pages'
 
@@ -6,7 +6,7 @@ import './Page.css'
 import { setCanvasToFullScreen } from '../../utils/utils'
 
 function Page() {
-  const [currentPage, setCurrentPage] = useState<PagePayload>(pages[0])
+  const [currentPage, setCurrentPage] = useState<PagePayload>(pages[2])
   const [controlsVisible, setControlsVisible] = useState<boolean>(true)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)
@@ -19,7 +19,7 @@ function Page() {
       canvasRef.current && setCanvasToFullScreen(canvasRef.current)
 
       init()
-      createControls()
+      createControls && createControls()
 
       return clear
     }

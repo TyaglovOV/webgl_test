@@ -1,10 +1,6 @@
 const initialVertex = `
     attribute vec3 a_Position; // аттрибуты разные для каждой вершины
-    // attribute vec a_EndOfLine;
-    // attribute vec3 a_Color;
-    // uniform float u_Shift;
     uniform vec2 u_Pos1;
-    uniform vec2 u_Pos2;
     uniform float u_Pow;
     uniform float u_Multiplier;
     uniform float u_Inverse;
