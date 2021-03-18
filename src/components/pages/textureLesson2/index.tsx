@@ -1,4 +1,4 @@
-import { getContext, getTexture, setCanvasToFullScreen } from '../../../utils/utils';
+import { createTextureRenderBuffer, getContext, getTexture, setCanvasToFullScreen } from '../../../utils/utils';
 import { VertexShader } from '../../../shaders/vertexShader';
 import { textureLesson1Shaders } from './shaders';
 import { FragmentShader } from '../../../shaders/fragmentShader';
@@ -10,53 +10,53 @@ import smile from './smile.jpeg'
 
 function createDots (): number[] {
   const dots: number[] = [
-    -1, -1, -1,    0.0, 0.0,
-    1, -1, -1,     1.0, 0.0,
-    1,  1, -1,     1.0, 1.0,
-    -1, -1, -1,    0.0, 0.0,
-    1, 1, -1,      1.0, 1.0,
-    -1,  1, -1,    0.0, 1.0,
+    -1, -1, -1,     -0.5, -0.5,
+     1, -1, -1,     1.5, -0.5,
+     1,  1, -1,     1.5, 1.5,
+    -1, -1, -1,     -0.5, -0.5,
+     1,  1, -1,     1.5, 1.5,
+    -1,  1, -1,     -0.5, 1.5,
 
-    -1, -1,  1,     -0.5, -0.5, 
-    1, -1,  1,      1.5, -0.5, 
-    1,  1,  1,      1.5, 1.5,
     -1, -1,  1,     -0.5, -0.5,
-    1,  1,  1,      1.5, 1.5,
-    -1,  1,  1,     -0.5, 1.5, 
+     1, -1,  1,     1.5, -0.5,
+     1,  1,  1,     1.5, 1.5,
+    -1, -1,  1,     -0.5, -0.5,
+     1,  1,  1,     1.5, 1.5,
+    -1,  1,  1,     -0.5, 1.5,
 
-    -1, -1, -1,     0, 0, 
-    -1,  1, -1,     1, 0,
-    -1,  1,  1,     1, 1,
-    -1, -1, -1,     0, 0,
-    -1,  1,  1,     1, 1,
-    -1, -1,  1,     0, 1, 
+    -1, -1, -1,     -0.5, -0.5,
+    -1,  1, -1,     1.5, -0.5,
+    -1,  1,  1,     1.5, 1.5,
+    -1, -1, -1,     -0.5, -0.5,
+    -1,  1,  1,     1.5, 1.5,
+    -1, -1,  1,     -0.5, 1.5,
 
-    1, -1, -1,      0, 0, 
-    1,  1, -1,      1, 0, 
-    1,  1,  1,      1, 1,
-    1, -1, -1,      0, 0,
-    1,  1,  1,      1, 1,
-    1, -1,  1,      0, 1, 
+     1, -1, -1,     -0.5, -0.5,
+     1,  1, -1,     1.5, -0.5,
+     1,  1,  1,     1.5, 1.5,
+     1, -1, -1,     -0.5, -0.5,
+     1,  1,  1,     1.5, 1.5,
+     1, -1,  1,     -0.5, 1.5,
 
-    -1, -1, -1,     0, 0, 
-    -1, -1,  1,     1, 0, 
-    1, -1,  1,      1, 1,
-    -1, -1, -1,     0, 0,
-    1, -1,  1,      1, 1,
-    1, -1, -1,      0, 1, 
+    -1, -1, -1,     -0.5, -0.5,
+    -1, -1,  1,     1.5, -0.5,
+     1, -1,  1,     1.5, 1.5,
+    -1, -1, -1,     -0.5, -0.5,
+     1, -1,  1,     1.5, 1.5,
+     1, -1, -1,     -0.5, 1.5,
 
-    -1,  1, -1,     0, 0, 
-    -1,  1,  1,     1, 0, 
-    1,  1,  1,      1, 1,
-    -1,  1, -1,     0, 0,
-    1,  1,  1,      1, 1,
-    1,  1, -1,      0, 1
+    -1,  1, -1,     -0.5, -0.5,
+    -1,  1,  1,     1.5, -0.5,
+     1,  1,  1,     1.5, 1.5,
+    -1,  1, -1,     -0.5, -0.5,
+     1,  1,  1,     1.5, 1.5,
+     1,  1, -1,     -0.5, 1.5,
   ]
 
   return dots
 }
 
-export function textureLesson1(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
+export function textureLesson2(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
   const controls = document.createElement('div')
 
@@ -103,17 +103,33 @@ export function textureLesson1(canvas: HTMLCanvasElement, controlParent: HTMLDiv
 
   let projectionMatrix = mat4.create()
   projectionMatrix = mat4.perspective(projectionMatrix, 90, canvas.clientWidth / canvas.clientHeight, 0.01, Infinity)
-  mat4.translate(projectionMatrix, projectionMatrix, [0, 0, -10])
+  mat4.translate(projectionMatrix, projectionMatrix, [0, 0, -2])
 
   // позволяем этим атрибутам брать данные из буфера, изначально они этого не умели
   gl.enableVertexAttribArray(a_Position)
   gl.enableVertexAttribArray(a_uv)
 
+  const texture = getTexture(gl, smile)
+
+  // процесс рендера в текстуру
+  // создаем фреймбуффер, в него кладем кадр
+  const fb = gl.createFramebuffer()
+  // биндим фб как активный для испольщования
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+
+  //рендер буффер, это результирующее (?) изображение
+  const rb = gl.createRenderbuffer()
+  gl.bindRenderbuffer(gl.RENDERBUFFER, rb)
+  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 512, 512)
+
+  const textureRenderBuffer = createTextureRenderBuffer(gl, rb, 0)
+
+  gl.bindRenderbuffer(gl.RENDERBUFFER,null)
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null)
+
   gl.enable(gl.DEPTH_TEST)
   gl.depthFunc(gl.LEQUAL)
   gl.clearDepth(1.0)
-
-  const texture = getTexture(gl, smile)
 
   let done = false
 
@@ -122,28 +138,57 @@ export function textureLesson1(canvas: HTMLCanvasElement, controlParent: HTMLDiv
       return
     }
 
-    gl.clear(gl.COLOR_BUFFER_BIT)
+    // ррррряяяяяяяяяндерим в текстуру
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+    gl.bindRenderbuffer(gl.RENDERBUFFER, rb)
 
-    if (needToRecalc) {
-      trianglesVertex = createDots()
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(trianglesVertex), gl.STATIC_DRAW)
+    // для нашей текстуры чистим окружение, устанавливаем размеры cntgtyb 2
+    gl.viewport(0,0,512,512)
+    gl.clearColor(0.2,0.2,0.2,1.0)
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
 
-      gl.uniformMatrix4fv(u_Pmatrix, false, projectionMatrix)
-      gl.uniformMatrix4fv(u_Mmatrix, false, modelMatrix)
-      gl.uniformMatrix4fv(u_Vmatrix, false, viewMatrix)
+    mat4.rotateX(modelMatrix,modelMatrix,0.0005*1);
+    mat4.rotateZ(modelMatrix,modelMatrix,0.0003*1);
+    mat4.rotateY(modelMatrix,modelMatrix,0.0007*1);
 
-      needToRecalc = false
-    }
+    gl.uniformMatrix4fv(u_Pmatrix, false, projectionMatrix)
+    gl.uniformMatrix4fv(u_Mmatrix, false, modelMatrix)
+    gl.uniformMatrix4fv(u_Vmatrix, false, viewMatrix)
 
     if (texture.webglTexture) {
       gl.activeTexture(gl.TEXTURE0)
       gl.bindTexture(gl.TEXTURE_2D, texture.webglTexture)
     }
 
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 4 * (2 + 3), 0)
-    gl.vertexAttribPointer(a_uv, 2, gl.FLOAT, false, 4 * (2 + 3), 4 * 3)
+    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 4 * 5, 0)
+    gl.vertexAttribPointer(a_uv, 2, gl.FLOAT, false, 4 * 5, 4 * 3)
 
     gl.drawArrays(gl.TRIANGLES, 0, trianglesVertex.length / 5)
+
+    gl.bindTexture(gl.TEXTURE_2D,null)
+
+    // рендерим финалочку
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    // gl.viewport(0,0,512,512)
+
+    mat4.rotateX(modelMatrix,modelMatrix,0.0005*1);
+    mat4.rotateZ(modelMatrix,modelMatrix,0.0003*1);
+    mat4.rotateY(modelMatrix,modelMatrix,0.0007*1);
+
+    gl.uniformMatrix4fv(u_Pmatrix, false, projectionMatrix)
+    gl.uniformMatrix4fv(u_Mmatrix, false, modelMatrix)
+    gl.uniformMatrix4fv(u_Vmatrix, false, viewMatrix)
+
+    gl.clearColor(1,1,1,1.0)
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
+
+    gl.bindTexture(gl.TEXTURE_2D,textureRenderBuffer);
+
+    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 4 * 5, 0)
+    gl.vertexAttribPointer(a_uv, 2, gl.FLOAT, false, 4 * 5, 4 * 3)
+
+    gl.drawArrays(gl.TRIANGLES, 0, trianglesVertex.length / 5)
+
     gl.flush()
 
     requestAnimationFrame(animate)

@@ -90,3 +90,19 @@ export function getTexture(gl: CanvasContext, url: string): webglText {
 
   return texture
 }
+
+export function createTextureRenderBuffer(gl: CanvasContext, renderBuffer: WebGLRenderbuffer | null, level: number = 0) {
+  const texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+
+  gl.texImage2D(gl.TEXTURE_2D, level, gl.RGBA, 512, 512, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, level)
+  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderBuffer)
+
+  // отвязываем
+  gl.bindTexture(gl.TEXTURE_2D,null)
+
+  return texture
+}

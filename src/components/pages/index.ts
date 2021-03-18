@@ -1,12 +1,14 @@
 import { createVectorFieldMultiple } from './vectorFieldMultiple'
 import { createVectorField } from './vectorField'
 import { textureLesson1 } from './textureLesson1'
+import { textureLesson2 } from './textureLesson2'
 import { mandelbrotSet } from './mandelbrotSet'
 
 export enum Pages {
   VectorField = 'vectorField',
   VectorFieldMultiple = 'VectorFieldMultiple',
   TextureLesson1 = 'textureLesson1',
+  TextureLesson2 = 'textureLesson2',
   MandelbrotSet = 'mandelbrotSet'
 }
 
@@ -35,6 +37,11 @@ const pages = [
     id: Pages.TextureLesson1,
     name: Pages.TextureLesson1,
     createScene: textureLesson1
+  },
+  {
+    id: Pages.TextureLesson2,
+    name: Pages.TextureLesson2,
+    createScene: textureLesson2
   },
   {
     id: Pages.MandelbrotSet,
