@@ -6,7 +6,7 @@ import './Page.css'
 import { setCanvasToFullScreen } from '../../utils/utils'
 
 function Page() {
-  const [currentPage, setCurrentPage] = useState<PagePayload>(pages[3])
+  const [currentPage, setCurrentPage] = useState<PagePayload>(pages[pages.length - 1])
   const [controlsVisible, setControlsVisible] = useState<boolean>(true)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const controlsRef = useRef<HTMLDivElement>(null)

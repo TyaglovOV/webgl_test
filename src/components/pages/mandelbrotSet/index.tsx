@@ -1,11 +1,10 @@
-import { getContext, getTexture, setCanvasToFullScreen } from '../../../utils/utils';
+import { getContext, setCanvasToFullScreen } from '../../../utils/utils';
 import { VertexShader } from '../../../shaders/vertexShader';
 import { textureLesson1Shaders } from './shaders';
 import { FragmentShader } from '../../../shaders/fragmentShader';
 import { Program } from '../../../programs/program';
 import ReactDOM from 'react-dom'
 import { FormEvent } from 'react'
-import { mat4 } from 'gl-matrix'
 
 function createDots (): number[] {
   const dots: number[] = [
@@ -53,22 +52,10 @@ export function mandelbrotSet(canvas: HTMLCanvasElement, controlParent: HTMLDivE
 
   const a_Position = gl.getAttribLocation(program.program, 'a_Position')
 
-  const u_Pmatrix = gl.getUniformLocation(program.program, 'u_Pmatrix')
-  const u_Mmatrix = gl.getUniformLocation(program.program, 'u_Mmatrix')
-  const u_Vmatrix = gl.getUniformLocation(program.program, 'u_Vmatrix')
   const u_canvasSize = gl.getUniformLocation(program.program, 'u_canvasSize')
   const u_zoom = gl.getUniformLocation(program.program, 'u_zoom')
   const u_offset = gl.getUniformLocation(program.program, 'u_offset')
-
-  const modelMatrix = mat4.create()
-  mat4.identity(modelMatrix)
-
-  const viewMatrix = mat4.create()
-  mat4.identity(viewMatrix)
-
-  let projectionMatrix = mat4.create()
-  projectionMatrix = mat4.perspective(projectionMatrix, 90, canvas.clientWidth / canvas.clientHeight, 0.01, Infinity)
-  mat4.translate(projectionMatrix, projectionMatrix, [0, 0, -1])
+  const u_shades = gl.getUniformLocation(program.program, 'u_shades')
 
   // позволяем этим атрибутам брать данные из буфера, изначально они этого не умели
   gl.enableVertexAttribArray(a_Position)
@@ -81,9 +68,11 @@ export function mandelbrotSet(canvas: HTMLCanvasElement, controlParent: HTMLDivE
   let zoom = 0.25
   let offsetX = 0
   let offsetY = 0
+  let shades = 0
 
   gl.uniform2f(u_canvasSize, canvas.clientWidth, canvas.clientHeight)
   gl.uniform1f(u_zoom, zoom)
+  gl.uniform1i(u_shades, shades)
   gl.uniform2f(u_offset, offsetX, offsetY)
 
   function animate (time: number) {
@@ -94,14 +83,9 @@ export function mandelbrotSet(canvas: HTMLCanvasElement, controlParent: HTMLDivE
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     if (needToRecalc) {
-      trianglesVertex = createDots()
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(trianglesVertex), gl.STATIC_DRAW)
-
-      gl.uniformMatrix4fv(u_Pmatrix, false, projectionMatrix)
-      gl.uniformMatrix4fv(u_Mmatrix, false, modelMatrix)
-      gl.uniformMatrix4fv(u_Vmatrix, false, viewMatrix)
       gl.uniform1f(u_zoom, zoom)
       gl.uniform2f(u_offset, offsetX, offsetY)
+      gl.uniform1i(u_shades, shades)
 
       needToRecalc = false
     }
@@ -160,6 +144,17 @@ export function mandelbrotSet(canvas: HTMLCanvasElement, controlParent: HTMLDivE
     }
   }
 
+  function changeShades(event: FormEvent) {
+    shades = 0
+
+    //@ts-ignore
+    if (event.target.checked) {
+      shades = 1
+    }
+
+    needToRecalc = true
+  }
+
   function init() {
     animate(0)
 
@@ -171,6 +166,17 @@ export function mandelbrotSet(canvas: HTMLCanvasElement, controlParent: HTMLDivE
   }
 
   function createControls() {
+    controlParent.appendChild(controls)
+
+    ReactDOM.render(
+      <div>
+        <div>
+          <label htmlFor="shades">black and white</label>
+          <input onChange={changeShades} type="checkbox" id="shades" />
+        </div>
+      </div>,
+      controls
+    )
   }
 
   function clear() {
@@ -181,6 +187,7 @@ export function mandelbrotSet(canvas: HTMLCanvasElement, controlParent: HTMLDivE
     canvas.removeEventListener('mouseup', mouseUp)
     canvas.removeEventListener('mouseleave', mouseUp)
     canvas.removeEventListener('mousemove', mouseMove)
+    controlParent.removeChild(controls)
   }
 
   return {

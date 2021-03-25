@@ -3,8 +3,6 @@ import { VertexShader } from '../../../shaders/vertexShader';
 import { textureLesson1Shaders } from './shaders';
 import { FragmentShader } from '../../../shaders/fragmentShader';
 import { Program } from '../../../programs/program';
-import ReactDOM from 'react-dom'
-import { FormEvent } from 'react'
 import { mat4 } from 'gl-matrix'
 import smile from './smile.jpeg'
 
@@ -58,7 +56,6 @@ function createDots (): number[] {
 
 export function textureLesson1(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
-  const controls = document.createElement('div')
 
   let needToRecalc = true
 

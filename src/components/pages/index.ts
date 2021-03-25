@@ -3,13 +3,15 @@ import { createVectorField } from './vectorField'
 import { textureLesson1 } from './textureLesson1'
 import { textureLesson2 } from './textureLesson2'
 import { mandelbrotSet } from './mandelbrotSet'
+import { tryToSwapTextures } from './tryToSwapTextures'
 
 export enum Pages {
   VectorField = 'vectorField',
   VectorFieldMultiple = 'VectorFieldMultiple',
   TextureLesson1 = 'textureLesson1',
   TextureLesson2 = 'textureLesson2',
-  MandelbrotSet = 'mandelbrotSet'
+  MandelbrotSet = 'mandelbrotSet',
+  TryToSwapTextures = 'tryToSwapTextures'
 }
 
 export type PagePayload = {
@@ -47,6 +49,11 @@ const pages = [
     id: Pages.MandelbrotSet,
     name: Pages.MandelbrotSet,
     createScene: mandelbrotSet
+  },
+  {
+    id: Pages.TryToSwapTextures,
+    name: Pages.TryToSwapTextures,
+    createScene: tryToSwapTextures
   }
 ] as PagePayload[]
 

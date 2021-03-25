@@ -1,12 +1,8 @@
 const initialVertex = `
     attribute vec3 a_Position;
     
-    uniform mat4 u_Pmatrix;
-    uniform mat4 u_Mmatrix;
-    uniform mat4 u_Vmatrix;
-    
     void main() {
-      gl_Position = u_Pmatrix * u_Mmatrix * u_Vmatrix * vec4(a_Position, 1.0);
+      gl_Position = vec4(a_Position, 1.0);
     }
   `
 
@@ -17,6 +13,7 @@ const initialFragment = `
     uniform vec2 u_canvasSize;
     uniform float u_zoom;
     uniform vec2 u_offset;
+    uniform int u_shades;
     
     void main() {
       const int maxIterations = 100;
@@ -45,7 +42,15 @@ const initialFragment = `
         }
       }
       
-      float color = float(maxIterations - iterationCount) / float(maxIterations);
+      float color = 1.0;
+
+      if (iterationCount == maxIterations) {
+        color = 0.0;
+      }
+      
+      if (u_shades == 0) {
+        color = float(maxIterations - iterationCount) / float(maxIterations);
+      }
       
       gl_FragColor = vec4(color, color, color, 1.0);
     }

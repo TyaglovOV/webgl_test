@@ -45,17 +45,6 @@ export function getShaderType (canvas: CanvasContext, type: ShaderType) {
   return type === ShaderType.Vertex ? canvas.VERTEX_SHADER : canvas.FRAGMENT_SHADER
 }
 
-let lastUpdateTime = Date.now();
-
-function calcDeltaTime () {
-  let now = Date.now()
-  let dt = (now - lastUpdateTime)
-  dt = Math.min(dt, 16.666)
-  lastUpdateTime = now
-
-  return dt
-}
-
 type webglText = {
   image: HTMLImageElement,
   webglTexture: null | WebGLTexture
@@ -105,4 +94,68 @@ export function createTextureRenderBuffer(gl: CanvasContext, renderBuffer: WebGL
   gl.bindTexture(gl.TEXTURE_2D,null)
 
   return texture
+}
+
+export function createTextureFoFrameBuffer({ gl, level = 0, width, height, format, data }: {
+  gl: CanvasContext, level?: number, width: number, height: number, format?: number, data?: any
+}) {
+  // gl.activeTexture(gl.TEXTURE0)
+  const texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+  gl.texImage2D(gl.TEXTURE_2D, level, format || gl.RGBA, width, height, 0, format || gl.RGBA, gl.UNSIGNED_BYTE, data || null)
+
+  return texture
+}
+
+export function createFrameBuffer({ gl, level = 0, width, height, format }: {
+  gl: CanvasContext, level: number, width: number, height: number, format?: number
+}) {
+  const texture = createTextureFoFrameBuffer({ gl, level, width, height, format })
+  const fb = gl.createFramebuffer()
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+  gl.viewport(0, 0, width, height)
+  gl.clear(gl.COLOR_BUFFER_BIT)
+
+  return {
+    texture,
+    fb,
+    width,
+    height,
+    texelSizeX: 1.0 / width,
+    texelSizeY: 1.0 / height,
+    makeActive: (level: number) => {
+      gl.activeTexture(gl.TEXTURE0 + level)
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+
+      return level
+    }
+  }
+}
+
+export function createDoubleFrameBuffer({ gl, level = 0, width, height, format }: {
+  gl: CanvasContext, level?: number, width: number, height: number, format?: number
+}) {
+  let fb1 = createFrameBuffer({ gl, level, width, height, format })
+  let fb2 = createFrameBuffer({ gl, level, width, height, format })
+
+  return {
+    read() {
+      return fb1
+    },
+    write() {
+      return fb2
+    },
+    swap() {
+      let temp = fb1
+      fb1 = fb2
+      fb2 = temp
+    }
+  }
 }
