@@ -1,4 +1,4 @@
-import { getPixelByCoords } from '../../../utils/shaderUtils';
+import { getPixelByCoords, goldNoise } from '../../../utils/shaderUtils';
 
 const initialVertex = `
     attribute vec2 a_Position;
@@ -22,14 +22,9 @@ const initialFragment = `
     
     varying vec2 v_texCoord;
    
-    
-    float PHI = 1.61803398874989484820459;
-    
     ${getPixelByCoords({ dx: 'dx', dy: 'dy' })}
     
-    float goldNoise(vec2 xy, float seed) {
-      return fract(tan(distance(xy * PHI, xy) * seed) * xy.x);
-    }
+    ${goldNoise({xy: 'xy', seed: 'seed'})}
     
     void main() {
       int live = getPixelByCoords(0, 0);
