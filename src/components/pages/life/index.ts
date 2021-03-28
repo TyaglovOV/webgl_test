@@ -1,5 +1,5 @@
 import {
-  createDoubleFrameBuffer, createTextureForFrameBuffer,
+  createTextureForFrameBuffer,
   getContext,
   setCanvasToFullScreen
 } from '../../../utils/utils';
@@ -22,7 +22,7 @@ function createDots (): number[] {
   return dots
 }
 
-export function life(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
+export function life(canvas: HTMLCanvasElement) {
   setCanvasToFullScreen(canvas)
 
   const gl = getContext(canvas)
@@ -57,7 +57,6 @@ export function life(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   const a_texCoord = gl.getAttribLocation(program.program, 'a_texCoord')
   const a_Position = gl.getAttribLocation(program.program, 'a_Position')
   const u_textureSize = gl.getUniformLocation(program.program, 'u_textureSize')
-  const u_line = gl.getUniformLocation(program.program, 'u_line')
   const u_seed = gl.getUniformLocation(program.program, 'u_seed')
 
   const textures: WebGLTexture[] = []
@@ -75,7 +74,6 @@ export function life(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   }
 
   let done = false
-  let ccc = 0
   let seed = 0
 
   function animate (time: number) {
@@ -130,7 +128,6 @@ export function life(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
     // Tell webgl the viewport setting needed for framebuffer.
     gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
     gl.drawArrays(gl.TRIANGLES, 0, 6)
-    ccc++
     requestAnimationFrame(animate)
   }
 

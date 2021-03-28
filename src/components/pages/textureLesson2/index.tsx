@@ -57,8 +57,6 @@ function createDots (): number[] {
 export function textureLesson2(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
 
-  let needToRecalc = true
-
   const gl = getContext(canvas)
 
   const shaders = [
@@ -219,7 +217,6 @@ export function textureLesson2(canvas: HTMLCanvasElement, controlParent: HTMLDiv
 
       lastX = coordX
       lastY = coordY
-      needToRecalc = true
     }
   }
 

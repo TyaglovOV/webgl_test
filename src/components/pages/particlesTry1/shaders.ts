@@ -36,26 +36,7 @@ const initialFragment = `
         return;
       }
       
-      int neighbors =
-        int(getPixelByCoords(-1, -1).r +
-        getPixelByCoords(0, -1).r +
-        getPixelByCoords(1, -1).r +
-        getPixelByCoords(-1, 0).r +
-        getPixelByCoords(1, 0).r +
-        getPixelByCoords(-1, 1).r +
-        getPixelByCoords(0, 1).r +
-        getPixelByCoords(1, 1).r);
-        
-      if (live == 1 && neighbors < 2)
-          gl_FragColor = vec4(0);
-      else if (live == 1 && (neighbors == 2 || neighbors == 3))
-          gl_FragColor = vec4(1);
-      else if (live == 1 && neighbors == 3)
-          gl_FragColor = vec4(0);
-      else if (live == 0 && neighbors == 3)
-          gl_FragColor = vec4(1);
-      else
-          gl_FragColor = vec4(0);
+      gl_FragColor = vec4(0);
     }
   `
 

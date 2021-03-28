@@ -1,5 +1,5 @@
 import {
-  createDoubleFrameBuffer, createTextureForFrameBuffer,
+  createTextureForFrameBuffer,
   getContext,
   setCanvasToFullScreen
 } from '../../../utils/utils';

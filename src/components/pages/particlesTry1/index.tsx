@@ -51,9 +51,9 @@ export function particlesTry1(canvas: HTMLCanvasElement, controlParent: HTMLDivE
   gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer)
   gl.vertexAttribPointer(a_texCoord, 2, gl.FLOAT, false, 4 * 2, 0)
   
-  gl.enableVertexAttribArray(a_pointCoord)
-  gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer)
-  gl.vertexAttribPointer(a_pointCoord, 2, gl.FLOAT, false, 4 * 2, 0)
+  // gl.enableVertexAttribArray(a_pointCoord)
+  // gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer)
+  // gl.vertexAttribPointer(a_pointCoord, 2, gl.FLOAT, false, 4 * 2, 0)
 
   let done = false
   let seed = 0
@@ -66,13 +66,13 @@ export function particlesTry1(canvas: HTMLCanvasElement, controlParent: HTMLDivE
     setCanvasToFullScreen(canvas)
 
     gl.uniform2f(u_textureSize, canvas.clientWidth, canvas.clientHeight)
-
-    if (seed < 2) {
-      gl.uniform1f(u_seed,  seed)
-      seed++
-    } else {
-      gl.uniform1f(u_seed,  0)
-    }
+    //
+    // if (seed < 2) {
+    //   gl.uniform1f(u_seed,  seed)
+    //   seed++
+    // } else {
+    //   gl.uniform1f(u_seed,  0)
+    // }
 
     drawToDoubleFramebuffer({ gl, dfbo, width: canvas.clientWidth, height: canvas.clientHeight, draw })
 
