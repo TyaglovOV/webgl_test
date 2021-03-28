@@ -1,5 +1,5 @@
 import {
-  createDoubleFrameBuffer, createTextureFoFrameBuffer,
+  createDoubleFrameBuffer, createTextureForFrameBuffer,
   getContext,
   setCanvasToFullScreen
 } from '../../../utils/utils';
@@ -64,7 +64,7 @@ export function life(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   const fbs: WebGLFramebuffer[] = []
 
   for (let i = 0; i < 2; i++) {
-    const texture = createTextureFoFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
+    const texture = createTextureForFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
     texture && textures.push(texture)
 
     const fbo = gl.createFramebuffer()

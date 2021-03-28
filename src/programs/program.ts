@@ -3,8 +3,8 @@ import { Shader } from '../shaders/shader';
 
 // привязка шейдериков к программе
 export class Program {
-  program: WebGLProgram
-  canvasContext: CanvasContext
+  _program: WebGLProgram
+  _gl: CanvasContext
 
   constructor(canvasContext: CanvasContext, vertexShader: Shader, fragmentShader: Shader) {
     const program = canvasContext.createProgram()!
@@ -16,8 +16,8 @@ export class Program {
     const linkStatus = canvasContext.getProgramParameter(program, canvasContext.LINK_STATUS)
 
     if (linkStatus) {
-      this.program = program
-      this.canvasContext = canvasContext
+      this._program = program
+      this._gl = canvasContext
       return
     }
 
@@ -27,6 +27,10 @@ export class Program {
   }
 
   use() {
-    this.canvasContext.useProgram(this.program)
+    this._gl.useProgram(this._program)
+  }
+
+  get program() {
+    return this._program
   }
 }

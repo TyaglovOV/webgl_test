@@ -27,7 +27,7 @@ const initialFragment = `
     ${goldNoise({xy: 'xy', seed: 'seed'})}
     
     void main() {
-      int live = getPixelByCoords(0, 0);
+      int live = int(getPixelByCoords(0, 0).r);
       
       if (u_seed != 0.0 && goldNoise(gl_FragCoord.xy, u_seed) < 0.5) {
         gl_FragColor = vec4(1);
@@ -36,14 +36,14 @@ const initialFragment = `
       }
       
       int neighbors =
-        getPixelByCoords(-1, -1) +
-        getPixelByCoords(0, -1) +
-        getPixelByCoords(1, -1) +
-        getPixelByCoords(-1, 0) +
-        getPixelByCoords(1, 0) +
-        getPixelByCoords(-1, 1) +
-        getPixelByCoords(0, 1) +
-        getPixelByCoords(1, 1);
+        int(getPixelByCoords(-1, -1).r +
+        getPixelByCoords(0, -1).r +
+        getPixelByCoords(1, -1).r +
+        getPixelByCoords(-1, 0).r +
+        getPixelByCoords(1, 0).r +
+        getPixelByCoords(-1, 1).r +
+        getPixelByCoords(0, 1).r +
+        getPixelByCoords(1, 1).r);
         
       if (live == 1 && neighbors < 2)
           gl_FragColor = vec4(0);
@@ -55,7 +55,6 @@ const initialFragment = `
           gl_FragColor = vec4(1);
       else
           gl_FragColor = vec4(0);
-     
     }
   `
 

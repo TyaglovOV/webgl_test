@@ -4,6 +4,7 @@ export enum ShaderType {
   Fragment = WebGLRenderingContext.FRAGMENT_SHADER
 }
 export type GLSLShader = string
+export type DrawAction = () => void
 
 export function getContext(canvas: HTMLCanvasElement): CanvasContext {
   const params = { alpha: false, antialias: true }
@@ -96,10 +97,9 @@ export function createTextureRenderBuffer(gl: CanvasContext, renderBuffer: WebGL
   return texture
 }
 
-export function createTextureFoFrameBuffer({ gl, level = 0, width, height, format, data }: {
+export function createTextureForFrameBuffer({ gl, level = 0, width, height, format, data }: {
   gl: CanvasContext, level?: number, width: number, height: number, format?: number, data?: any
 }) {
-  // gl.activeTexture(gl.TEXTURE0)
   const texture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, texture)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -112,10 +112,20 @@ export function createTextureFoFrameBuffer({ gl, level = 0, width, height, forma
   return texture
 }
 
+type Framebuffer = {
+  texture: WebGLTexture | null,
+  fb: WebGLFramebuffer | null,
+  width: number,
+  height: number,
+  texelSizeX: number,
+  texelSizeY: number,
+  makeActive: (level?: number) => {}
+}
+
 export function createFrameBuffer({ gl, level = 0, width, height, format }: {
   gl: CanvasContext, level: number, width: number, height: number, format?: number
-}) {
-  const texture = createTextureFoFrameBuffer({ gl, level, width, height, format })
+}): Framebuffer {
+  const texture = createTextureForFrameBuffer({ gl, level, width, height, format })
   const fb = gl.createFramebuffer()
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, fb)
@@ -130,7 +140,7 @@ export function createFrameBuffer({ gl, level = 0, width, height, format }: {
     height,
     texelSizeX: 1.0 / width,
     texelSizeY: 1.0 / height,
-    makeActive: (level: number) => {
+    makeActive: (level: number = 0) => {
       gl.activeTexture(gl.TEXTURE0 + level)
       gl.bindTexture(gl.TEXTURE_2D, texture)
 
@@ -139,17 +149,23 @@ export function createFrameBuffer({ gl, level = 0, width, height, format }: {
   }
 }
 
+type DoubleFramebuffer = {
+  read: Framebuffer,
+  write: Framebuffer,
+  swap: () => void
+}
+
 export function createDoubleFrameBuffer({ gl, level = 0, width, height, format }: {
   gl: CanvasContext, level?: number, width: number, height: number, format?: number
-}) {
+}): DoubleFramebuffer {
   let fb1 = createFrameBuffer({ gl, level, width, height, format })
   let fb2 = createFrameBuffer({ gl, level, width, height, format })
 
   return {
-    read() {
+    get read() {
       return fb1
     },
-    write() {
+    get write() {
       return fb2
     },
     swap() {
@@ -158,4 +174,20 @@ export function createDoubleFrameBuffer({ gl, level = 0, width, height, format }
       fb2 = temp
     }
   }
+}
+
+export function drawToFramebuffer({ gl, fb, width, height, draw }: {
+  gl: CanvasContext, fb: Framebuffer, width: number, height: number, draw: DrawAction
+}) {
+  gl.viewport(0, 0, width, height)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb?.fb)
+  draw()
+  gl.bindTexture(gl.TEXTURE_2D, fb.texture)
+}
+
+export function drawToDoubleFramebuffer({ gl, dfbo, width, height, draw }: {
+  gl:  CanvasContext, dfbo: DoubleFramebuffer, width: number, height: number, draw: DrawAction
+}) {
+  drawToFramebuffer({ gl, fb: dfbo.read, width, height, draw })
+  dfbo.swap()
 }
