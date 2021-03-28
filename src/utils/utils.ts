@@ -119,11 +119,11 @@ type Framebuffer = {
   height: number,
   texelSizeX: number,
   texelSizeY: number,
-  makeActive: (level?: number) => {}
+  makeActive: (level?: number) => number
 }
 
 export function createFrameBuffer({ gl, level = 0, width, height, format }: {
-  gl: CanvasContext, level: number, width: number, height: number, format?: number
+  gl: CanvasContext, level?: number, width: number, height: number, format?: number
 }): Framebuffer {
   const texture = createTextureForFrameBuffer({ gl, level, width, height, format })
   const fb = gl.createFramebuffer()

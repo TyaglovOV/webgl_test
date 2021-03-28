@@ -1,10 +1,12 @@
 import {
-  createDoubleFrameBuffer,
-  drawToDoubleFramebuffer,
+  createDoubleFrameBuffer, createFrameBuffer,
+  drawToDoubleFramebuffer, drawToFramebuffer,
   getContext,
   setCanvasToFullScreen
 } from '../../../utils/utils';
-import { lifeShaders } from './shaders'
+import { particlesShader } from './particlesShader'
+import { trackShader as copyShader } from './trackShader'
+import { fadeShader } from './fadeShader'
 import { VertexShader } from '../../../shaders/vertexShader'
 import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
@@ -12,25 +14,25 @@ import { figures } from '../../../utils/figures'
 
 export function particlesTry1(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
-  const pointsCount = 100
+  const pointsCount = 5000
 
   const gl = getContext(canvas)
 
-  const program = new Program(gl, new VertexShader(gl, lifeShaders[0]), new FragmentShader(gl, lifeShaders[1]))
-  program.use()
+  const particlesProgram = new Program(gl, new VertexShader(gl, particlesShader[0]), new FragmentShader(gl, particlesShader[1]))
+  const fadeProgram = new Program(gl, new VertexShader(gl, fadeShader[0]), new FragmentShader(gl, fadeShader[1]))
+  const copyProgram = new Program(gl, new VertexShader(gl, copyShader[0]), new FragmentShader(gl, copyShader[1]))
 
-  gl.clearColor(1,1,1,0)
+  gl.clearColor(0,0,0,0.99)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
-  const a_texCoord = gl.getAttribLocation(program.program, 'a_texCoord')
-  const a_Position = gl.getAttribLocation(program.program, 'a_Position')
-  const a_pointCoord = gl.getAttribLocation(program.program, 'a_pointCoord')
-  
-  const u_textureSize = gl.getUniformLocation(program.program, 'u_textureSize')
-  const u_seed = gl.getUniformLocation(program.program, 'u_seed')
+  const a_pointCoord = gl.getAttribLocation(particlesProgram.program, 'a_pointCoord')
+  const u_time = gl.getUniformLocation(particlesProgram.program, 'u_time')
 
-  const dfbo = createDoubleFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
+  const a_texCoord = gl.getAttribLocation(fadeProgram.program, 'a_texCoord')
+  const a_position = gl.getAttribLocation(fadeProgram.program, 'a_position')
+  const particleFb = createFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
 
+  // todo optimize, concat arrays
   const positionBuffer =  gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.flatPlane.vertices()), gl.STATIC_DRAW)
@@ -41,22 +43,9 @@ export function particlesTry1(canvas: HTMLCanvasElement, controlParent: HTMLDivE
 
   const pointsBuffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer)
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.points.verticesRandom(pointsCount)), gl.STATIC_DRAW)
-
-  gl.enableVertexAttribArray(a_Position)
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 4 * 2, 0)
-
-  gl.enableVertexAttribArray(a_texCoord)
-  gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer)
-  gl.vertexAttribPointer(a_texCoord, 2, gl.FLOAT, false, 4 * 2, 0)
-  
-  // gl.enableVertexAttribArray(a_pointCoord)
-  // gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer)
-  // gl.vertexAttribPointer(a_pointCoord, 2, gl.FLOAT, false, 4 * 2, 0)
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.points.verticesRandom(pointsCount * 2)), gl.STATIC_DRAW)
 
   let done = false
-  let seed = 0
 
   function animate (time: number) {
     if (done) {
@@ -65,30 +54,31 @@ export function particlesTry1(canvas: HTMLCanvasElement, controlParent: HTMLDivE
 
     setCanvasToFullScreen(canvas)
 
-    gl.uniform2f(u_textureSize, canvas.clientWidth, canvas.clientHeight)
-    //
-    // if (seed < 2) {
-    //   gl.uniform1f(u_seed,  seed)
-    //   seed++
-    // } else {
-    //   gl.uniform1f(u_seed,  0)
-    // }
+    particlesProgram.use()
+    gl.uniform1f(u_time, time)
 
-    drawToDoubleFramebuffer({ gl, dfbo, width: canvas.clientWidth, height: canvas.clientHeight, draw })
+    gl.enableVertexAttribArray(a_pointCoord)
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer)
+    gl.vertexAttribPointer(a_pointCoord, 4, gl.FLOAT, false, 4 * 4, 0)
 
-    finalDraw()
+    drawToFramebuffer({ gl, fb: particleFb, width: canvas.clientWidth, height: canvas.clientHeight,
+      draw: () => gl.drawArrays(gl.POINTS, 0, pointsCount)
+    })
 
-    requestAnimationFrame(animate)
-  }
+    copyProgram.use()
+    gl.enableVertexAttribArray(a_position)
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+    gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 2, 0)
 
-  function draw () {
-    gl.drawArrays(gl.TRIANGLES, 0, 6)
-  }
+    gl.enableVertexAttribArray(a_texCoord)
+    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer)
+    gl.vertexAttribPointer(a_texCoord, 2, gl.FLOAT, false, 4 * 2, 0)
 
-  function finalDraw() {
     gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight)
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
     gl.drawArrays(gl.TRIANGLES, 0, 6)
+
+    requestAnimationFrame(animate)
   }
 
   function init() {
