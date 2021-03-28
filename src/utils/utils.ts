@@ -177,16 +177,16 @@ export function createDoubleFrameBuffer({ gl, level = 0, width, height, format }
 }
 
 export function drawToFramebuffer({ gl, fb, width, height, draw }: {
-  gl: CanvasContext, fb: Framebuffer, width: number, height: number, draw: DrawAction
+  gl: CanvasContext, fb: Framebuffer, width: number, height: number, draw?: DrawAction
 }) {
   gl.viewport(0, 0, width, height)
   gl.bindFramebuffer(gl.FRAMEBUFFER, fb?.fb)
-  draw()
+  draw && draw()
   gl.bindTexture(gl.TEXTURE_2D, fb.texture)
 }
 
 export function drawToDoubleFramebuffer({ gl, dfbo, width, height, draw }: {
-  gl:  CanvasContext, dfbo: DoubleFramebuffer, width: number, height: number, draw: DrawAction
+  gl:  CanvasContext, dfbo: DoubleFramebuffer, width: number, height: number, draw?: DrawAction
 }) {
   drawToFramebuffer({ gl, fb: dfbo.read, width, height, draw })
   dfbo.swap()

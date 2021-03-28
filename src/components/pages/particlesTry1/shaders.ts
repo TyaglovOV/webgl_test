@@ -3,6 +3,7 @@ import { getPixelByCoords, goldNoise } from '../../../utils/shaders';
 const initialVertex = `
     attribute vec2 a_Position;
     attribute vec2 a_texCoord;
+    attribute vec2 a_pointCoord;
     
     varying vec2 v_texCoord;
     

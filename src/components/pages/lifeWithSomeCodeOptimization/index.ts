@@ -23,16 +23,16 @@ export function life2(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) 
 
   const positionBuffer =  gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.flatPlane.vertices), gl.STATIC_DRAW)
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.flatPlane.vertices()), gl.STATIC_DRAW)
 
   const texcoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.flatPlane.texCoords), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.flatPlane.texCoords()), gl.STATIC_DRAW);
 
-  const a_texCoord = gl.getAttribLocation(program._program, 'a_texCoord')
-  const a_Position = gl.getAttribLocation(program._program, 'a_Position')
-  const u_textureSize = gl.getUniformLocation(program._program, 'u_textureSize')
-  const u_seed = gl.getUniformLocation(program._program, 'u_seed')
+  const a_texCoord = gl.getAttribLocation(program.program, 'a_texCoord')
+  const a_Position = gl.getAttribLocation(program.program, 'a_Position')
+  const u_textureSize = gl.getUniformLocation(program.program, 'u_textureSize')
+  const u_seed = gl.getUniformLocation(program.program, 'u_seed')
 
   const dfbo = createDoubleFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
 
