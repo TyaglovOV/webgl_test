@@ -7,6 +7,7 @@ import { tryToSwapTextures } from './tryToSwapTextures'
 import { life } from './life'
 import { life2 } from './lifeWithSomeCodeOptimization'
 import { particlesTry1 } from './particlesTry1'
+import { blur } from './blur'
 
 export enum Pages {
   VectorField = 'vectorField',
@@ -17,7 +18,8 @@ export enum Pages {
   TryToSwapTextures = 'tryToSwapTextures',
   Life = 'life',
   Life2 = 'life2',
-  ParticlesTry1 = 'particlesTry1'
+  ParticlesTry1 = 'particlesTry1',
+  Blur = 'blur'
 }
 
 export type PagePayload = {
@@ -75,6 +77,11 @@ const pages = [
     id: Pages.ParticlesTry1,
     name: Pages.ParticlesTry1,
     createScene: particlesTry1
+  },
+  {
+    id: Pages.Blur,
+    name: Pages.Blur,
+    createScene: blur
   },
 ] as PagePayload[]
 
