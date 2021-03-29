@@ -9,12 +9,12 @@ const initialVertex = `
       float theta = 5.0;
       float alpha = 0.0;
       
-      float distance1 = distance(a_pointCoord, vec2(0.0, 0.0)) / 2.0;
+      float distance1 = distance(a_pointCoord, vec2(0.0, 0.0));
       
       float inRads = acos(a_pointCoord.x / distance1) * 180.0 / PI;
       
-      float x = distance1 * cos(deltaTime * pow((3.0 / distance1), 0.9) + PI + inRads);
-      float y = distance1 * sin(deltaTime * pow((3.0 / distance1), 0.9) + PI + inRads);
+      float x = distance1 * (1.0 / deltaTime) * cos(deltaTime * pow((1.0 / distance1), 1.5) + inRads);
+      float y = distance1 * (1.0 / deltaTime) *  sin(deltaTime * pow((1.0 / distance1), 1.5) + inRads);
       
       gl_Position = vec4(x, y, 0.0, 1.0);
     }

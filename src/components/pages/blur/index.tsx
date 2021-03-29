@@ -14,7 +14,7 @@ import { figures } from '../../../utils/figures'
 
 export function blur(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
-  const pointsCount = 50000
+  const pointsCount = 500000
   const edgeDetectKernel = [
     1, 2, 1,
     2, 4, 2,
