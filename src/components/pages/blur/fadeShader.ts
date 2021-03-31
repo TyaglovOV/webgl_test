@@ -39,7 +39,7 @@ const initialFragment = `
        // делим сумму на весовой коэффициент, но берём из результата только rgb
        // прозрачность установим в значение 1.0
        
-       gl_FragColor = vec4((colorSum / u_kernelWeight).rgb * 0.9, 1.0);
+       gl_FragColor = vec4((colorSum / u_kernelWeight).rgb * 0.95, 1.0);
     }
   `
 

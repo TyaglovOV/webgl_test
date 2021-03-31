@@ -14,7 +14,7 @@ import { figures } from '../../../utils/figures'
 
 export function blur(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
-  const pointsCount = 500000
+  const pointsCount = 10000
   const edgeDetectKernel = [
     1, 2, 1,
     2, 4, 2,
@@ -55,6 +55,7 @@ export function blur(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(figures.points.verticesRandom(pointsCount)), gl.STATIC_DRAW)
 
   let done = false
+  let count = 0
 
   function animate (time: number) {
     if (done) {
@@ -64,7 +65,7 @@ export function blur(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
     setCanvasToFullScreen(canvas)
 
     particlesProgram.use()
-    gl.uniform1f(u_time, time)
+    gl.uniform1f(u_time, count)
 
     gl.enableVertexAttribArray(a_pointCoord)
     gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer)
@@ -101,6 +102,7 @@ export function blur(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
     gl.drawArrays(gl.TRIANGLES, 0, 6)
 
+    count++
     requestAnimationFrame(animate)
   }
 
