@@ -12,14 +12,14 @@ import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
 import { figures } from '../../../utils/figures'
 
-export function blur(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
+export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
   const pointsCount = 10000
   const edgeDetectKernel = [
     1, 2, 1,
     2, 4, 2,
     1, 2, 1
-  ];
+  ]
 
   const gl = getContext(canvas)
 

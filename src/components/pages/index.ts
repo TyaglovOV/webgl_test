@@ -4,10 +4,11 @@ import { textureLesson1 } from './textureLesson1'
 import { textureLesson2 } from './textureLesson2'
 import { mandelbrotSet } from './mandelbrotSet'
 import { tryToSwapTextures } from './tryToSwapTextures'
-import { life } from './life'
+// import { life } from './life'
 import { life2 } from './lifeWithSomeCodeOptimization'
 import { particlesTry1 } from './particlesTry1'
-import { blur } from './blur'
+import { vortex } from './vortex'
+import { transformFeedbackLesson } from './transformFeedbackLesson'
 
 export enum Pages {
   VectorField = 'vectorField',
@@ -19,7 +20,8 @@ export enum Pages {
   Life = 'life',
   Life2 = 'life2',
   ParticlesTry1 = 'particlesTry1',
-  Blur = 'blur'
+  Vortex = 'vortex',
+  TransformFeedbackLesson = 'transformFeedbackLesson',
 }
 
 export type PagePayload = {
@@ -63,11 +65,11 @@ const pages = [
     name: Pages.TryToSwapTextures,
     createScene: tryToSwapTextures
   },
-  {
-    id: Pages.Life,
-    name: Pages.Life,
-    createScene: life
-  },
+  // {
+  //   id: Pages.Life,
+  //   name: Pages.Life,
+  //   createScene: life
+  // },
   {
     id: Pages.Life2,
     name: Pages.Life2,
@@ -79,9 +81,14 @@ const pages = [
     createScene: particlesTry1
   },
   {
-    id: Pages.Blur,
-    name: Pages.Blur,
-    createScene: blur
+    id: Pages.Vortex,
+    name: Pages.Vortex,
+    createScene: vortex
+  },
+  {
+    id: Pages.TransformFeedbackLesson,
+    name: Pages.TransformFeedbackLesson,
+    createScene: transformFeedbackLesson
   },
 ] as PagePayload[]
 
