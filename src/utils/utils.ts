@@ -6,7 +6,7 @@ export enum ShaderType {
 export type GLSLShader = string
 export type DrawAction = () => void
 
-export function getContext(canvas: HTMLCanvasElement): CanvasContext {
+export function getContext(canvas: HTMLCanvasElement): WebGL2RenderingContext {
   const params = { alpha: false, antialias: true }
   let context: WebGL2RenderingContext | WebGLRenderingContext = <WebGL2RenderingContext>canvas.getContext('webgl2', params)
 
@@ -22,7 +22,7 @@ export function getContext(canvas: HTMLCanvasElement): CanvasContext {
 
   context.viewport(0, 0, context.canvas.width, context.canvas.height);
 
-  return context
+  return <WebGL2RenderingContext>context
 }
 
 export function setCanvasToFullScreen(canvas: HTMLCanvasElement) {

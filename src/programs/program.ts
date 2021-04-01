@@ -1,28 +1,38 @@
 import { CanvasContext } from '../utils/utils';
 import { Shader } from '../shaders/shader';
 
+type ProgramOptions = {
+  transfromFeedbackVaryings?: string[],
+  transfromFeedbackAttributes?: GLenum
+}
+
 // привязка шейдериков к программе
 export class Program {
   _program: WebGLProgram
   _gl: CanvasContext
 
-  constructor(canvasContext: CanvasContext, vertexShader: Shader, fragmentShader: Shader) {
-    const program = canvasContext.createProgram()!
+  constructor(gl: WebGL2RenderingContext, vertexShader: Shader, fragmentShader: Shader, options?: ProgramOptions) {
+    const program = gl.createProgram()!
 
-    canvasContext.attachShader(program, vertexShader.shader)
-    canvasContext.attachShader(program, fragmentShader.shader)
-    canvasContext.linkProgram(program)
+    gl.attachShader(program, vertexShader.shader)
+    gl.attachShader(program, fragmentShader.shader)
 
-    const linkStatus = canvasContext.getProgramParameter(program, canvasContext.LINK_STATUS)
+    if (options?.transfromFeedbackVaryings?.length && options?.transfromFeedbackAttributes) {
+      gl.transformFeedbackVaryings(program, options?.transfromFeedbackVaryings, options?.transfromFeedbackAttributes)
+    }
+
+    gl.linkProgram(program)
+
+    const linkStatus = gl.getProgramParameter(program, gl.LINK_STATUS)
 
     if (linkStatus) {
       this._program = program
-      this._gl = canvasContext
+      this._gl = gl
       return
     }
 
-    console.log(canvasContext.getProgramInfoLog(program))
-    canvasContext.deleteProgram(program)
+    console.log(gl.getProgramInfoLog(program))
+    gl.deleteProgram(program)
     throw new Error('program problem, bruh')
   }
 
