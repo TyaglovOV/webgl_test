@@ -1,8 +1,6 @@
-import { getContext, setCanvasToFullScreen } from '../../../utils/utils';
-import { VertexShader } from '../../../shaders/vertexShader';
-import { textureLesson1Shaders } from './shaders';
-import { FragmentShader } from '../../../shaders/fragmentShader';
-import { Program } from '../../../programs/program';
+import { getContext, setCanvasToFullScreen } from '../../../utils/utils'
+import { textureLesson1Shaders } from './shaders'
+import { Program } from '../../../programs/program'
 import ReactDOM from 'react-dom'
 import { FormEvent } from 'react'
 
@@ -28,12 +26,7 @@ export function mandelbrotSet(canvas: HTMLCanvasElement, controlParent: HTMLDivE
 
   const gl = getContext(canvas)
 
-  const shaders = [
-    new VertexShader(gl, textureLesson1Shaders[0]),
-    new FragmentShader(gl, textureLesson1Shaders[1])
-  ]
-
-  const program = new Program(gl, shaders[0], shaders[1])
+  const program = new Program(gl, textureLesson1Shaders)
   program.use()
 
   gl.clearColor(1, 1, 1,1)

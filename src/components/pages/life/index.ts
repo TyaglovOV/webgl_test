@@ -4,8 +4,6 @@ import {
   setCanvasToFullScreen
 } from '../../../utils/utils';
 import { lifeShaders } from './shaders'
-import { VertexShader } from '../../../shaders/vertexShader'
-import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
 
 function createDots (): number[] {
@@ -27,12 +25,7 @@ export function life(canvas: HTMLCanvasElement) {
 
   const gl = getContext(canvas)
 
-  const shaders2 = [
-    new VertexShader(gl, lifeShaders[0]),
-    new FragmentShader(gl, lifeShaders[1])
-  ]
-
-  const program = new Program(gl, shaders2[0], shaders2[1])
+  const program = new Program(gl, lifeShaders)
   program.use()
 
   gl.clearColor(0,0,0,1.0)
@@ -76,7 +69,7 @@ export function life(canvas: HTMLCanvasElement) {
   let done = false
   let seed = 0
 
-  function animate (time: number) {
+  function animate () {
     if (done) {
       return
     }
@@ -132,7 +125,7 @@ export function life(canvas: HTMLCanvasElement) {
   }
 
   function init() {
-    animate(0)
+    animate()
   }
 
   function createControls() {}

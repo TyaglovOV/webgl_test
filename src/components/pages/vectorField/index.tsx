@@ -1,10 +1,8 @@
-import { getContext, setCanvasToFullScreen } from '../../../utils/utils';
-import { VertexShader } from '../../../shaders/vertexShader';
-import { vectorFieldShaders } from './shaders';
-import { FragmentShader } from '../../../shaders/fragmentShader';
-import { Program } from '../../../programs/program';
-import ReactDOM from 'react-dom';
-import { FormEvent } from 'react';
+import { getContext, setCanvasToFullScreen } from '../../../utils/utils'
+import { vectorFieldShaders } from './shaders'
+import { Program } from '../../../programs/program'
+import ReactDOM from 'react-dom'
+import { FormEvent } from 'react'
 
 function createDots (rows: number, cols: number): number[] {
   const dots: number[] = []
@@ -40,12 +38,7 @@ export function  createVectorField(canvas: HTMLCanvasElement, controlParent: HTM
 
   const gl = getContext(canvas)
 
-  const shaders = [
-    new VertexShader(gl, vectorFieldShaders[0]),
-    new FragmentShader(gl, vectorFieldShaders[1])
-  ]
-
-  const program = new Program(gl, shaders[0], shaders[1])
+  const program = new Program(gl, vectorFieldShaders)
   program.use()
 
   gl.clearColor(1, 1, 1,1)

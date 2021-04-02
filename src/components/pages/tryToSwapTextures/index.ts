@@ -4,8 +4,6 @@ import {
   setCanvasToFullScreen
 } from '../../../utils/utils';
 import { tryToSwapShaders2 } from './shaders2'
-import { VertexShader } from '../../../shaders/vertexShader'
-import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
 
 function createDots (): number[] {
@@ -27,12 +25,7 @@ export function tryToSwapTextures(canvas: HTMLCanvasElement, controlParent: HTML
 
   const gl = getContext(canvas)
 
-  const shaders2 = [
-    new VertexShader(gl, tryToSwapShaders2[0]),
-    new FragmentShader(gl, tryToSwapShaders2[1])
-  ]
-
-  const program = new Program(gl, shaders2[0], shaders2[1])
+  const program = new Program(gl, tryToSwapShaders2)
   program.use()
 
   gl.clearColor(0,0,0,1.0)

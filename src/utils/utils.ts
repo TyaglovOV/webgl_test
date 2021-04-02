@@ -8,10 +8,10 @@ export type DrawAction = () => void
 
 export function getContext(canvas: HTMLCanvasElement): WebGL2RenderingContext {
   const params = { alpha: false, antialias: true }
-  let context: WebGL2RenderingContext | WebGLRenderingContext = <WebGL2RenderingContext>canvas.getContext('webgl2', params)
+  let context: WebGL2RenderingContext | WebGLRenderingContext = canvas.getContext('webgl2', params) as WebGL2RenderingContext
 
   if (!Boolean(context)) {
-    context = <WebGLRenderingContext>canvas.getContext('webgl', params)
+    context = canvas.getContext('webgl', params) as WebGL2RenderingContext
   }
 
   if (!Boolean(context)) {
@@ -22,7 +22,7 @@ export function getContext(canvas: HTMLCanvasElement): WebGL2RenderingContext {
 
   context.viewport(0, 0, context.canvas.width, context.canvas.height);
 
-  return <WebGL2RenderingContext>context
+  return context as WebGL2RenderingContext
 }
 
 export function setCanvasToFullScreen(canvas: HTMLCanvasElement) {

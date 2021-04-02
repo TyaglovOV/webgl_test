@@ -1,51 +1,76 @@
 import {
+  createDoubleFrameBuffer,
+  drawToDoubleFramebuffer,
   getContext,
   setCanvasToFullScreen
 } from '../../../utils/utils'
+import { pathFindingTFShader } from './pathFindingTFShader'
 import { particlesShader } from './particlesShader'
-import { particlesTFShader } from './particlesTFShader'
+import { fadeShader } from './fadeShader'
+import { blurShader } from './blurShader'
+import { VertexShader } from '../../../shaders/vertexShader'
+import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
+import { figures } from '../../../utils/figures'
+import { mat4 } from 'gl-matrix'
+import { blurKernel, computeKernelWeight } from '../../../utils/imageProcessing';
 
-export function transformFeedbackLesson(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
+export function slime(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   setCanvasToFullScreen(canvas)
 
   const gl = getContext(canvas)
 
-  const particlesPositionTFProgram = new Program(gl, particlesTFShader,
-    {
-      transfromFeedbackAttributes: gl.SEPARATE_ATTRIBS,
-      transfromFeedbackVaryings: ['newPosition']
-    }
-  )
-
-  const particlesProgram = new Program(gl, particlesShader)
+  const programs = {
+    pathFinding: new Program(gl,pathFindingTFShader,
+      {
+        transfromFeedbackAttributes: gl.SEPARATE_ATTRIBS,
+        transfromFeedbackVaryings: ['newPosition']
+      }),
+    particles: new Program(gl, particlesShader),
+    fade: new Program(gl, fadeShader),
+    blur: new Program(gl, blurShader)
+  }
 
   gl.clearColor(0, 0, 0, 1)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
-  const oldPosition = gl.getAttribLocation(particlesPositionTFProgram.program, 'oldPosition')
-  const velocity = gl.getAttribLocation(particlesPositionTFProgram.program, 'velocity')
-  const u_step = gl.getUniformLocation(particlesPositionTFProgram.program, 'u_step')
-  const u_canvasDimensions = gl.getUniformLocation(particlesPositionTFProgram.program, 'u_canvasDimensions')
-
-  const particlesProgramLocs = {
-    position: gl.getAttribLocation(particlesProgram.program, 'position'),
-    matrix: gl.getUniformLocation(particlesProgram.program, 'u_matrix'),
+  const pathFindingLocs = {
+    oldPosition: gl.getAttribLocation(programs.pathFinding.program, 'oldPosition'),
+    velocity: gl.getAttribLocation(programs.pathFinding.program, 'velocity'),
+    u_step: gl.getUniformLocation(programs.pathFinding.program, 'u_step'),
+    u_canvasDimensions: gl.getUniformLocation(programs.pathFinding.program, 'u_canvasDimensions')
   }
 
+  const particlesLocs = {
+    position: gl.getAttribLocation(programs.particles.program, 'position'),
+    matrix: gl.getUniformLocation(programs.particles.program, 'u_matrix'),
+  }
+  
+  const blurLocs = {
+    a_texCoord: gl.getAttribLocation(programs.blur.program, 'a_texCoord'),
+    a_position: gl.getAttribLocation(programs.blur.program, 'a_position'),
+    u_textureSize: gl.getUniformLocation(programs.blur.program, 'u_textureSize'),
+    kernelLocation: gl.getUniformLocation(programs.blur.program, "u_kernel[0]"),
+    kernelWeightLocation: gl.getUniformLocation(programs.blur.program, "u_kernelWeight"),
+  }
+
+  const dfbo = createDoubleFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
+
   const rand = (min: number, max: number) => {
-    if (max === undefined) {
-      max = min;
-      min = 0;
-    }
     return Math.random() * (max - min) + min;
   }
 
   const numParticles = 200;
-  const createPoints = (num: number, ranges: number[][]) =>
-    //@ts-ignore
-    new Array(num).fill(0).map(_ => ranges.map(range => rand(...range))).flat();
-  const positions = new Float32Array(createPoints(numParticles, [[canvas.width], [canvas.height]]));
+  const createPoints = (num: number, ranges: number[][]) => {
+    return new Array(num)
+      .fill(0)
+      .map((_) => {
+        return ranges.map((range) => {
+          return rand(range[0], range[1])
+        })
+      }).flat();
+  }
+  const positions = new Float32Array(createPoints(numParticles, [[0, canvas.width], [0, canvas.height]]));
   const velocities = new Float32Array(createPoints(numParticles, [[-300, 300], [-300, 300]]));
 
   //@ts-ignore
@@ -80,18 +105,18 @@ export function transformFeedbackLesson(canvas: HTMLCanvasElement, controlParent
   }
 
   const updatePositionVA1 = makeVertexArray(gl, [
-    [position1Buffer, oldPosition],
-    [velocityBuffer, velocity],
+    [position1Buffer, pathFindingLocs.oldPosition],
+    [velocityBuffer, pathFindingLocs.velocity],
   ]);
   const updatePositionVA2 = makeVertexArray(gl, [
-    [position2Buffer, oldPosition],
-    [velocityBuffer, velocity],
+    [position2Buffer, pathFindingLocs.oldPosition],
+    [velocityBuffer, pathFindingLocs.velocity],
   ]);
 
   const drawVA1 = makeVertexArray(
-    gl, [[position1Buffer, particlesProgramLocs.position]]);
+    gl, [[position1Buffer, particlesLocs.position]]);
   const drawVA2 = makeVertexArray(
-    gl, [[position2Buffer, particlesProgramLocs.position]]);
+    gl, [[position2Buffer, particlesLocs.position]]);
 
   function makeTransformFeedback(gl: WebGL2RenderingContext, buffer: WebGLBuffer | null) {
     const tf = gl.createTransformFeedback();
@@ -153,12 +178,12 @@ export function transformFeedbackLesson(canvas: HTMLCanvasElement, controlParent
     setCanvasToFullScreen(canvas)
     gl.clear(gl.COLOR_BUFFER_BIT)
 
-    particlesPositionTFProgram.use()
+    programs.pathFinding.use()
     gl.bindVertexArray(current.updateVA)
-    gl.uniform1f(u_step, count)
-    gl.uniform2f(u_canvasDimensions, gl.canvas.width, gl.canvas.height)
+    gl.uniform1f(pathFindingLocs.u_step, count)
+    gl.uniform2f(pathFindingLocs.u_canvasDimensions, gl.canvas.width, gl.canvas.height)
 
-    gl.enable(gl.RASTERIZER_DISCARD);
+    gl.enable(gl.RASTERIZER_DISCARD)
 
     gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, current.tf);
     gl.beginTransformFeedback(gl.POINTS);
@@ -167,14 +192,14 @@ export function transformFeedbackLesson(canvas: HTMLCanvasElement, controlParent
     gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, null);
 
     // turn on using fragment shaders again
-    gl.disable(gl.RASTERIZER_DISCARD);
+    gl.disable(gl.RASTERIZER_DISCARD)
 
     // now draw the particles.
-    particlesProgram.use()
+    programs.particles.use()
     gl.bindVertexArray(current.drawVA)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     gl.uniformMatrix4fv(
-      particlesProgramLocs.matrix,
+      particlesLocs.matrix,
       false,
       //@ts-ignore
       orthographic(0, gl.canvas.width, 0, gl.canvas.height, -1, 1));

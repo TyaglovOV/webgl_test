@@ -1,14 +1,12 @@
 import {
-  createDoubleFrameBuffer, createFrameBuffer,
-  drawToDoubleFramebuffer, drawToFramebuffer,
+  createDoubleFrameBuffer,
+  drawToDoubleFramebuffer,
   getContext,
   setCanvasToFullScreen
 } from '../../../utils/utils';
 import { particlesShader } from './particlesShader'
 import { trackShader as copyShader } from './trackShader'
 import { fadeShader } from './fadeShader'
-import { VertexShader } from '../../../shaders/vertexShader'
-import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
 import { figures } from '../../../utils/figures'
 
@@ -23,9 +21,9 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
 
   const gl = getContext(canvas)
 
-  const particlesProgram = new Program(gl, new VertexShader(gl, particlesShader[0]), new FragmentShader(gl, particlesShader[1]))
-  const fadeProgram = new Program(gl, new VertexShader(gl, fadeShader[0]), new FragmentShader(gl, fadeShader[1]))
-  const copyProgram = new Program(gl, new VertexShader(gl, copyShader[0]), new FragmentShader(gl, copyShader[1]))
+  const particlesProgram = new Program(gl, particlesShader)
+  const fadeProgram = new Program(gl, fadeShader)
+  const copyProgram = new Program(gl, copyShader)
 
   gl.clearColor(0,0,0,0.99)
   gl.clear(gl.COLOR_BUFFER_BIT)
@@ -37,8 +35,8 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
   const a_position = gl.getAttribLocation(fadeProgram.program, 'a_position')
   const u_textureSize = gl.getUniformLocation(fadeProgram.program, 'u_textureSize')
 
-  var kernelLocation = gl.getUniformLocation(fadeProgram.program, "u_kernel[0]");
-  var kernelWeightLocation = gl.getUniformLocation(fadeProgram.program, "u_kernelWeight")
+  const kernelLocation = gl.getUniformLocation(fadeProgram.program, "u_kernel[0]")
+  const kernelWeightLocation = gl.getUniformLocation(fadeProgram.program, "u_kernelWeight")
   const dfbo = createDoubleFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
 
   // todo optimize, concat arrays
@@ -57,7 +55,7 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
   let done = false
   let count = 0
 
-  function animate (time: number) {
+  function animate () {
     if (done) {
       return
     }
@@ -114,7 +112,7 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
   }
 
   function init() {
-    animate(0)
+    animate()
   }
 
   function createControls() {}

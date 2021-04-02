@@ -5,8 +5,6 @@ import {
   setCanvasToFullScreen
 } from '../../../utils/utils';
 import { lifeShaders } from './shaders'
-import { VertexShader } from '../../../shaders/vertexShader'
-import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
 import { figures } from '../../../utils/figures'
 
@@ -15,7 +13,7 @@ export function life2(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) 
 
   const gl = getContext(canvas)
 
-  const program = new Program(gl, new VertexShader(gl, lifeShaders[0]), new FragmentShader(gl, lifeShaders[1]))
+  const program = new Program(gl, lifeShaders)
   program.use()
 
   gl.clearColor(1,1,1,0)

@@ -1,8 +1,6 @@
-import { createTextureRenderBuffer, getContext, getTexture, setCanvasToFullScreen } from '../../../utils/utils';
-import { VertexShader } from '../../../shaders/vertexShader';
-import { textureLesson1Shaders } from './shaders';
-import { FragmentShader } from '../../../shaders/fragmentShader';
-import { Program } from '../../../programs/program';
+import { createTextureRenderBuffer, getContext, getTexture, setCanvasToFullScreen } from '../../../utils/utils'
+import { textureLesson1Shaders } from './shaders'
+import { Program } from '../../../programs/program'
 import { mat4 } from 'gl-matrix'
 import smile from './smile.jpeg'
 
@@ -59,12 +57,7 @@ export function textureLesson2(canvas: HTMLCanvasElement, controlParent: HTMLDiv
 
   const gl = getContext(canvas)
 
-  const shaders = [
-    new VertexShader(gl, textureLesson1Shaders[0]),
-    new FragmentShader(gl, textureLesson1Shaders[1])
-  ]
-
-  const program = new Program(gl, shaders[0], shaders[1])
+  const program = new Program(gl, textureLesson1Shaders)
   program.use()
 
   gl.clearColor(1, 1, 1,1)
@@ -142,9 +135,9 @@ export function textureLesson2(canvas: HTMLCanvasElement, controlParent: HTMLDiv
     gl.clearColor(0.2,0.2,0.2,1.0)
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
 
-    mat4.rotateX(modelMatrix,modelMatrix,0.0005*1);
-    mat4.rotateZ(modelMatrix,modelMatrix,0.0003*1);
-    mat4.rotateY(modelMatrix,modelMatrix,0.0007*1);
+    mat4.rotateX(modelMatrix,modelMatrix,0.0005);
+    mat4.rotateZ(modelMatrix,modelMatrix,0.0003);
+    mat4.rotateY(modelMatrix,modelMatrix,0.0007);
 
     gl.uniformMatrix4fv(u_Pmatrix, false, projectionMatrix)
     gl.uniformMatrix4fv(u_Mmatrix, false, modelMatrix)
@@ -166,9 +159,9 @@ export function textureLesson2(canvas: HTMLCanvasElement, controlParent: HTMLDiv
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);
     // gl.viewport(0,0,512,512)
 
-    mat4.rotateX(modelMatrix,modelMatrix,0.0005*1);
-    mat4.rotateZ(modelMatrix,modelMatrix,0.0003*1);
-    mat4.rotateY(modelMatrix,modelMatrix,0.0007*1);
+    mat4.rotateX(modelMatrix,modelMatrix,0.0005);
+    mat4.rotateZ(modelMatrix,modelMatrix,0.0003);
+    mat4.rotateY(modelMatrix,modelMatrix,0.0007);
 
     gl.uniformMatrix4fv(u_Pmatrix, false, projectionMatrix)
     gl.uniformMatrix4fv(u_Mmatrix, false, modelMatrix)

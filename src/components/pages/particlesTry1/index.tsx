@@ -1,14 +1,12 @@
 import {
-  createDoubleFrameBuffer, createFrameBuffer,
-  drawToDoubleFramebuffer, drawToFramebuffer,
+  createFrameBuffer,
+  drawToFramebuffer,
   getContext,
   setCanvasToFullScreen
 } from '../../../utils/utils';
 import { particlesShader } from './particlesShader'
 import { trackShader as copyShader } from './trackShader'
 import { fadeShader } from './fadeShader'
-import { VertexShader } from '../../../shaders/vertexShader'
-import { FragmentShader } from '../../../shaders/fragmentShader'
 import { Program } from '../../../programs/program'
 import { figures } from '../../../utils/figures'
 
@@ -18,9 +16,9 @@ export function particlesTry1(canvas: HTMLCanvasElement, controlParent: HTMLDivE
 
   const gl = getContext(canvas)
 
-  const particlesProgram = new Program(gl, new VertexShader(gl, particlesShader[0]), new FragmentShader(gl, particlesShader[1]))
-  const fadeProgram = new Program(gl, new VertexShader(gl, fadeShader[0]), new FragmentShader(gl, fadeShader[1]))
-  const copyProgram = new Program(gl, new VertexShader(gl, copyShader[0]), new FragmentShader(gl, copyShader[1]))
+  const particlesProgram = new Program(gl, particlesShader)
+  const fadeProgram = new Program(gl, fadeShader)
+  const copyProgram = new Program(gl, copyShader)
 
   gl.clearColor(0,0,0,0.99)
   gl.clear(gl.COLOR_BUFFER_BIT)

@@ -1,5 +1,6 @@
-import { CanvasContext } from '../utils/utils';
-import { Shader } from '../shaders/shader';
+import { CanvasContext } from '../utils/utils'
+import { VertexShader } from '../shaders/vertexShader'
+import { FragmentShader } from '../shaders/fragmentShader'
 
 type ProgramOptions = {
   transfromFeedbackVaryings?: string[],
@@ -11,11 +12,11 @@ export class Program {
   _program: WebGLProgram
   _gl: CanvasContext
 
-  constructor(gl: WebGL2RenderingContext, vertexShader: Shader, fragmentShader: Shader, options?: ProgramOptions) {
+  constructor(gl: WebGL2RenderingContext, shaders: string[], options?: ProgramOptions) {
     const program = gl.createProgram()!
 
-    gl.attachShader(program, vertexShader.shader)
-    gl.attachShader(program, fragmentShader.shader)
+    gl.attachShader(program, new VertexShader(gl, shaders[0]).shader)
+    gl.attachShader(program, new FragmentShader(gl, shaders[1]).shader)
 
     if (options?.transfromFeedbackVaryings?.length && options?.transfromFeedbackAttributes) {
       gl.transformFeedbackVaryings(program, options?.transfromFeedbackVaryings, options?.transfromFeedbackAttributes)

@@ -9,6 +9,7 @@ import { life2 } from './lifeWithSomeCodeOptimization'
 import { particlesTry1 } from './particlesTry1'
 import { vortex } from './vortex'
 import { transformFeedbackLesson } from './transformFeedbackLesson'
+import { slime } from './slime'
 
 export enum Pages {
   VectorField = 'vectorField',
@@ -17,11 +18,12 @@ export enum Pages {
   TextureLesson2 = 'textureLesson2',
   MandelbrotSet = 'mandelbrotSet',
   TryToSwapTextures = 'tryToSwapTextures',
-  Life = 'life',
+  // Life = 'life',
   Life2 = 'life2',
   ParticlesTry1 = 'particlesTry1',
   Vortex = 'vortex',
   TransformFeedbackLesson = 'transformFeedbackLesson',
+  Slime = 'slime',
 }
 
 export type PagePayload = {
@@ -89,6 +91,11 @@ const pages = [
     id: Pages.TransformFeedbackLesson,
     name: Pages.TransformFeedbackLesson,
     createScene: transformFeedbackLesson
+  },
+  {
+    id: Pages.Slime,
+    name: Pages.Slime,
+    createScene: slime
   },
 ] as PagePayload[]
 

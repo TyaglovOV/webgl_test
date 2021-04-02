@@ -1,10 +1,8 @@
 import { getContext, setCanvasToFullScreen } from '../../../utils/utils'
 import { vectorFieldMultipleShaders } from './shaders'
-import { Program } from '../../../programs/program';
-import { VertexShader } from '../../../shaders/vertexShader';
-import { FragmentShader } from '../../../shaders/fragmentShader'
-import ReactDOM from 'react-dom';
-import { FormEvent } from 'react';
+import { Program } from '../../../programs/program'
+import ReactDOM from 'react-dom'
+import { FormEvent } from 'react'
 
 export function createVectorFieldMultiple(canvas: HTMLCanvasElement, controlParent: HTMLDivElement) {
   const controls = document.createElement('div')
@@ -15,19 +13,13 @@ export function createVectorFieldMultiple(canvas: HTMLCanvasElement, controlPare
   setCanvasToFullScreen(canvas)
   const gl = getContext(canvas)
 
-  // to initialize START
-  const shaders = [
-    new VertexShader(gl, vectorFieldMultipleShaders[0]),
-    new FragmentShader(gl, vectorFieldMultipleShaders[1])
-  ]
-
-  const program = new Program(gl, shaders[0], shaders[1])
+  const program = new Program(gl, vectorFieldMultipleShaders)
   program.use()
 
   gl.clearColor(1, 1, 1,1)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
-  let dotsVertex = createDots(rows, cols, canvas.width, canvas.height)
+  let dotsVertex = createDots(rows, cols)
   // создаем буфер
   const dotsBuffer = gl.createBuffer()
   // биндим буфер в видеокарте, теперь запись идет туда
@@ -58,7 +50,7 @@ export function createVectorFieldMultiple(canvas: HTMLCanvasElement, controlPare
 
   let done = false
 
-  function animate (time: number) {
+  function animate () {
     if (done) {
       return
     }
@@ -66,7 +58,7 @@ export function createVectorFieldMultiple(canvas: HTMLCanvasElement, controlPare
     gl.clear(gl.COLOR_BUFFER_BIT)
 
     if (!recalced) {
-      dotsVertex = createDots(rows, cols, canvas.width, canvas.height)
+      dotsVertex = createDots(rows, cols)
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dotsVertex), gl.STATIC_DRAW)
 
       recalced = true
@@ -117,7 +109,7 @@ export function createVectorFieldMultiple(canvas: HTMLCanvasElement, controlPare
     canvas.addEventListener('click', mouseClick)
     done = false
 
-    animate(0)
+    animate()
   }
 
   function createControls() {
@@ -161,7 +153,7 @@ export function createVectorFieldMultiple(canvas: HTMLCanvasElement, controlPare
   }
 }
 
-function createDots (rows: number, cols: number, width: number, height: number): number[] {
+function createDots (rows: number, cols: number): number[] {
   const dots: number[] = []
   let pointer = 0
 
