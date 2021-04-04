@@ -22,7 +22,7 @@ function createFlatPlaneTexCoords() {
   ]
 }
 
-function createRandomPoints(count: number, normalized: boolean = true) {
+function createRandomPoints(count: number) {
   const points = new Array(count * 2)
 
   for (let i = 0; i < count * 2; i++) {
@@ -32,12 +32,27 @@ function createRandomPoints(count: number, normalized: boolean = true) {
   return points
 }
 
+const rand = (min: number, max: number) => {
+  return Math.random() * (max - min) + min;
+}
+
+function createRangeRandomPoints (num: number, ranges: number[][]) {
+  return new Array(num)
+    .fill(0)
+    .map((_) => {
+      return ranges.map((range) => {
+        return rand(range[0], range[1])
+      })
+    }).flat();
+}
+
 export const figures = {
   flatPlane: {
     vertices: createFlatPlane,
     texCoords: createFlatPlaneTexCoords
   },
   points: {
-    verticesRandom: createRandomPoints
+    verticesRandom: createRandomPoints,
+    rangeRandom: createRangeRandomPoints
   }
 }

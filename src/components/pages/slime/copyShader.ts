@@ -19,10 +19,8 @@ const initialFragment = `
     varying vec2 v_texCoord;
     
     void main() {
-      vec4 tex = texture2D(u_sampler, v_texCoord);
-
-      gl_FragColor = tex;
+      gl_FragColor = texture2D(u_sampler, v_texCoord);
     }
   `
 
-export const trackShader = [initialVertex, initialFragment]
+export const copyShader = [initialVertex, initialFragment]

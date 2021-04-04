@@ -3,12 +3,15 @@
 // уже после всего другой шейдерик берет эти данные и отрисовывает
 const initialVertex = `#version 300 es
     in vec2 oldPosition;
+    in vec2 oldDirection;
     in vec2 velocity;
     
+    uniform float u_speed;
     uniform float u_step;
     uniform vec2 u_canvasDimensions;
     
     out vec2 newPosition;
+    out vec2 newDirection;
     
     vec2 euclideanModulo(vec2 n, vec2 m) {
       return mod(mod(n, m) + m, m);
@@ -16,8 +19,10 @@ const initialVertex = `#version 300 es
     
     void main() {
       newPosition = euclideanModulo(
-          oldPosition + velocity * u_step / 100.0,
+          oldPosition + velocity * 10.0 / 1000.0,
           u_canvasDimensions);
+          
+      newDirection = oldDirection;
     }
   `
 

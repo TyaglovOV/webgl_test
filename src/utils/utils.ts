@@ -122,6 +122,14 @@ type Framebuffer = {
   makeActive: (level?: number) => number
 }
 
+export function makeBuffer(gl: WebGL2RenderingContext, sizeOrData: Float32Array, usage: GLenum) {
+  const buffer = gl.createBuffer()
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+  gl.bufferData(gl.ARRAY_BUFFER, sizeOrData, usage)
+
+  return buffer
+}
+
 export function createFrameBuffer({ gl, level = 0, width, height, format }: {
   gl: CanvasContext, level?: number, width: number, height: number, format?: number
 }): Framebuffer {

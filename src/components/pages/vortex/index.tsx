@@ -5,7 +5,6 @@ import {
   setCanvasToFullScreen
 } from '../../../utils/utils';
 import { particlesShader } from './particlesShader'
-import { trackShader as copyShader } from './trackShader'
 import { fadeShader } from './fadeShader'
 import { Program } from '../../../programs/program'
 import { figures } from '../../../utils/figures'
@@ -23,7 +22,6 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
 
   const particlesProgram = new Program(gl, particlesShader)
   const fadeProgram = new Program(gl, fadeShader)
-  const copyProgram = new Program(gl, copyShader)
 
   gl.clearColor(0,0,0,0.99)
   gl.clear(gl.COLOR_BUFFER_BIT)
@@ -37,6 +35,7 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
 
   const kernelLocation = gl.getUniformLocation(fadeProgram.program, "u_kernel[0]")
   const kernelWeightLocation = gl.getUniformLocation(fadeProgram.program, "u_kernelWeight")
+
   const dfbo = createDoubleFrameBuffer({ gl, width: canvas.clientWidth, height: canvas.clientHeight })
 
   // todo optimize, concat arrays
@@ -73,6 +72,11 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
       draw: () => gl.drawArrays(gl.POINTS, 0, pointsCount)
     })
 
+    fadeProgram.use()
+    gl.uniform1fv(kernelLocation, edgeDetectKernel);
+    gl.uniform1f(kernelWeightLocation, computeKernelWeight(edgeDetectKernel));
+    gl.uniform2f(u_textureSize, canvas.clientWidth, canvas.clientHeight)
+
     gl.enableVertexAttribArray(a_position)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
     gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 2, 0)
@@ -81,11 +85,6 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
     gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer)
     gl.vertexAttribPointer(a_texCoord, 2, gl.FLOAT, false, 4 * 2, 0)
 
-    fadeProgram.use()
-    gl.uniform1fv(kernelLocation, edgeDetectKernel);
-    gl.uniform1f(kernelWeightLocation, computeKernelWeight(edgeDetectKernel));
-    gl.uniform2f(u_textureSize, canvas.clientWidth, canvas.clientHeight)
-
     drawToDoubleFramebuffer({ gl, dfbo, width: canvas.clientWidth, height: canvas.clientHeight,
       draw: () => gl.drawArrays(gl.TRIANGLES, 0, 6)
     })
@@ -93,8 +92,6 @@ export function vortex(canvas: HTMLCanvasElement, controlParent: HTMLDivElement)
     drawToDoubleFramebuffer({ gl, dfbo, width: canvas.clientWidth, height: canvas.clientHeight,
       draw: () => gl.drawArrays(gl.TRIANGLES, 0, 6)
     })
-
-    copyProgram.use()
 
     gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight)
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
